@@ -1,9 +1,7 @@
 function getContent(fragmentId, callback){
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+	xhttp.onload = function() {
 	   callback(xhttp.responseText);
-    }
 };
 	xhttp.open("GET", fragmentId + ".html");
 	xhttp.send(null);
