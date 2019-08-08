@@ -1,1 +1,2269 @@
+1. index.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="HandheldFriendly" content="true">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <title>Interaction</title>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+
+<style scoped>
+  html {
+    -webkit-text-size-adjust: none
+  }
+</style>
+
+2. components
+   A. page
+   NotFound.vue
+   <template>
+    <div class="text-xs-center mt-5">Session Lost</div>
+</template>
+
+<script>
+export default {
+    
+}
+</script>
+
+B. Tal.vue
+<template>
+    <v-container fluid class="pa-1">
+        <app-header class="mt-3 mb-3"/>
+        <v-layout column id="content">
+            <v-layout v-bind="layoutAttributes">
+                <app-sidebar class="elevation-8"/>
+                <div v-if="showed"><app-content-notapple class="elevation-8" /></div>
+                <div v-else-if="!showed && isPercentageY"><app-content-notapple-two class="elevation-8" /></div>
+                <div v-else-if="!showed && isPercentageN"><app-content-notapple-three class="elevation-8" /></div>
+            </v-layout>
+            <div class="text-xs-center">
+                    <v-btn color="black" :disabled="isPercentageY == false" v-on:click="playtwo" small dark id="crd">
+                        <v-icon dark color="pink" v-if="showIcon">how_to_reg</v-icon>
+                        <h3 style="color:#B30057" v-else>Yes</h3>
+                    </v-btn>
+                    
+                    <v-btn color="black" :disabled="isPercentageN == false" v-on:click="playthree" small dark id="crd">
+                        <v-icon dark color="pink" v-if="showIcon">notification_important</v-icon>
+                        <h3 style="color:#B30057" v-else>No</h3>
+                    </v-btn>
+                </div>
+        </v-layout>
+        <app-footer class="mt-3"/>
+    </v-container>
+</template>
+
+<script>
+import Header from './Header'
+import Footer from './Footer'
+import Sidebar from './Sidebar'
+import ContentNotapple from './ContentNotapple'
+import ContentNotappleTwo from './ContentNotappleTwo'
+import ContentNotappleThree from './ContentNotappleThree'
+
+export default {
+    data() {
+        return {
+                showed: true,
+                showIcon: true
+            }
+    },
+
+    computed: {
+        windowSize () {
+            return this.$store.getters['video/windowSize']
+        },
+        selectPercentage () {
+            return this.$store.getters['tal/selectPercentage']
+        },
+        isPercentageSelected () {
+            return this.$store.getters['tal/isPercentageSelected']
+        },
+        selectY () {
+            return this.$store.getters['tal/selectY']
+        },
+        isPercentageY () {
+            return this.$store.getters['tal/isPercentageY']
+        },
+        selectN () {
+            return this.$store.getters['tal/selectN']
+        },
+        isPercentageN () {
+            return this.$store.getters['tal/isPercentageN']
+        },
+        layoutAttributes () {
+            return this.$store.getters['video/layoutAttributes'](this.windowSize.width)
+        }
+    },
+
+    watch: {
+        windowSize () {
+            this.$vuetify.goTo('#content', { duration: 500, offset: -5 })
+        }
+    },
+
+    methods: {
+        playthree(){
+            this.showed = false;
+        },
+        playtwo(){
+            this.showed = false;
+        },
+        detectBrowser(){
+            this.result = navigator.userAgent;
+            if(navigator.userAgent.indexOf("Firefox") !=-1){
+                this.showIcon = false;
+            }
+        }
+    },
+
+    mounted(){
+        this.detectBrowser()
+    },
+
+    components: {
+        appHeader: Header,
+        appFooter: Footer,
+        appSidebar: Sidebar,
+        appContentNotapple: ContentNotapple,
+        appContentNotappleTwo: ContentNotappleTwo,
+        appContentNotappleThree: ContentNotappleThree
+    }
+}
+</script>
+
+2. Sidebar.vue
+<template>
+    <div :style="sideBarStyl">
+        <v-layout v-bind="sideLayoutAttributes">
+            <div
+                v-for="(icon, i) in icons"
+                :key="i"
+                :style="itemStyl"
+                v-ripple
+                @click="onClick(i)"
+            >
+                <v-layout align-center justify-center column fill-height>
+                    <v-icon size="30" color="pink" v-if="showIcon">{{ icon.name }}</v-icon>
+                    <v-avatar 
+                        size="60px"
+                        radius="10px"
+                        :tile="tile"
+                        v-else
+                        >
+                            <img src="@/assets/fsslogo.png" id="logosidebar">
+                    </v-avatar>
+                    <span class="body-2 purple--text">{{ icon.label }}</span>
+                </v-layout>
+            </div>
+            
+            <div :style="leftOverStyl" v-ripple @click="onClick()">
+                <v-layout align-center justify-center column fill-height>
+                    <v-avatar 
+                        size="60px" 
+                        radius="10px"
+                        :tile="tile"
+                        >
+                            <img src="@/assets/fsslogo.png" id="logosidebar">
+                    </v-avatar>
+                </v-layout>
+            </div>
+        </v-layout>
+    </div>
+</template>
+
+<script>
+export default {
+    data () {
+        return {
+            icons: [
+                { label: 'Member', name: 'accessibility'},
+                { label: 'Employer', name: 'supervisor_account'},
+                { label: 'Insurance', name: 'account_balance'}
+            ],
+            sideBorderStyl: { border: '1px solid #FFFFFF' },
+            tile: true,
+            showIcon: true
+        }
+    },
+    computed: {
+        windowSize () {
+            return this.$store.getters['video/windowSize']
+        },
+        layoutAttributes () {
+            return this.$store.getters['video/layoutAttributes'](this.windowSize.width)
+        },
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },        
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowSize.width, this.windowSize.height)
+        },
+        sideLayoutAttributes () {
+            return this.$store.getters['video/sideLayoutAttributes'](this.layoutAttributes)
+        },
+        sideBarStyl () {
+            return Object.assign(
+                this.$store.getters['video/sideBarStyl'](this.layoutAttributes, this.contentSize, this.sizeParams),
+                this.sideBorderStyl,
+                { 'background-color': '#000000' }
+            )
+        },
+        itemStyl () {
+            return Object.assign(
+                this.$store.getters['video/sideItemStyl'](this.sizeParams), this.sideBorderStyl
+            )
+        },
+        leftOverStyl () {
+            return Object.assign(
+                this.$store.getters['video/sideLeftOverStyl'](this.layoutAttributes, this.contentSize, this.sizeParams, this.icons.length),
+                this.sideBorderStyl
+            )
+        }
+    },
+    methods: {
+        onClick (i=null) {
+            //console.log('click-' + i)
+            if(i==0){
+                var win = window.open('https://firststatesuper.com.au/member', '_blank');
+                win.focus();
+            } else if(i==1){
+                var win = window.open('https://firststatesuper.com.au/employer', '_blank');
+                win.focus();
+            } else if(i==2){
+                var win = window.open('https://firststatesuper.com.au/investment-and-performance', '_blank');
+                win.focus();
+            } else if(i==null){
+                var win = window.open('https://firststatesuper.com.au/about', '_blank');
+                win.focus();
+            }
+        },
+
+        //browser detect
+        detectBrowser(){
+            this.result = navigator.userAgent;
+            if(navigator.userAgent.indexOf("Firefox") !=-1){
+                this.showIcon = false;
+            }
+        }
+    },
+
+    mounted() {
+        this.detectBrowser()
+    }
+}
+</script>
+
+3. Header.vue
+<template>
+        <div class="stretch">
+            <v-toolbar color="white" id="crd">
+            <v-spacer></v-spacer>
+            <v-avatar 
+            size="60px" 
+            radius="10px"
+            :tile="tile"
+            >
+            <img src="@/assets/fsslogo.png" id="logo">
+            </v-avatar>
+            <v-toolbar-title v-text="title"></v-toolbar-title>
+            <v-spacer></v-spacer>
+      </v-toolbar>
+    </div>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+        tile: true,
+        title: 'INTERACTIVE VIDEO'
+    }
+  },
+}
+</script>
+
+<style scoped>
+.stretch {
+    font-size: 0.85em;
+    border-radius: 10px;
+    color: black;
+}
+</style>
+
+4. Footer.vue
+<template>
+        <v-footer
+            color="white"
+            class="white"
+            height="auto"
+        >
+            <v-card
+            class="flex"
+            flat
+            tile
+            id="crd"
+            >
+            <v-spacer></v-spacer>
+
+            <v-card-actions class="white justify-center">
+                &copy; Copyright {{ new Date().getFullYear() }}&nbsp;
+                <v-avatar
+                size="30px" 
+                radius="10px"
+                :tile="tile"
+                >
+                <img src="@/assets/Green TAL logo.png" id="logotalnew">
+                </v-avatar>
+                <v-spacer></v-spacer>
+
+                Powered by&nbsp;
+                <v-avatar
+                size="30px" 
+                radius="10px"
+                :tile="tile"
+                >
+                <img src="@/assets/Green TAL logo.png" id="logotalme">
+                </v-avatar>
+                 /ME Interactive Video
+
+                <v-spacer></v-spacer>
+                Help | Privacy Policy
+            </v-card-actions>
+
+            <v-spacer></v-spacer>
+            </v-card>
+  </v-footer>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+        tile: true,
+        title: 'INTERACTIVE VIDEO'
+    }
+  }
+}
+</script>
+
+<style scoped>
+.white {
+    font-size: 0.9em;
+    border-radius: 10px;
+    color: black;
+}
+</style>
+
+5. custom-theme.css
+#logofinishing{
+  -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    border: none;
+    height: 25px;
+    width: 65px;
+}
+
+#logosidebar {
+  -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    border: none;
+    height: 30px;
+    width: 60px;
+}
+
+#logofooter {
+  -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    border: none;
+    height: 30px;
+    width: 60px;
+}
+
+#logotalme {
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  border: none;
+  height: 10px;
+  width: 30px;
+}
+
+#logotalnew {
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  border: none;
+  height: 10px;
+  width: 30px;
+}
+
+.stretch {
+  width: 100%;
+  background-color: #FFFFFF;
+}
+
+.center {
+  display: table;
+  margin: 0 auto;
+  width: 200px;
+  background-color: #ECEFF1;
+}
+
+#logo{
+  -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    border: none;
+    height: 30px;
+    width: 65px;
+}
+
+#crd {
+    -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      border: 0px;
+      font-weight: bold;
+      color: black;
+}
+
+#btns {
+    height: 100%;
+    z-index: 1000;
+}
+
+.vjs-tech {
+    background-color: white;
+ }
+
+.vjs-custom-skin > .video-js .vjs-menu-button-inline.vjs-slider-active,.vjs-custom-skin > .video-js .vjs-menu-button-inline:focus,.vjs-custom-skin > .video-js .vjs-menu-button-inline:hover,.video-js.vjs-no-flex .vjs-menu-button-inline {
+  width: 10em;
+}
+
+.vjs-custom-skin > .video-js .vjs-controls-disabled .vjs-big-play-button {
+  display: none!important;
+}
+
+.vjs-custom-skin > .video-js .vjs-control {
+  width: 3em
+}
+
+.vjs-custom-skin > .video-js .vjs-control.vjs-live-control{
+  width: auto;
+  padding-left: .5em;
+  letter-spacing: .1em;
+}
+
+.vjs-custom-skin > .video-js .vjs-menu-button-inline:before {
+  width: 1.5em
+}
+
+.vjs-menu-button-inline .vjs-menu {
+  left: 3em
+}
+
+.vjs-paused.vjs-has-started.vjs-custom-skin > .video-js .vjs-big-play-button,.video-js.vjs-ended .vjs-big-play-button,.video-js.vjs-paused .vjs-big-play-button {
+  display: block
+}
+
+.vjs-custom-skin > .video-js .vjs-load-progress div,.vjs-seeking .vjs-big-play-button,.vjs-waiting .vjs-big-play-button {
+  display: none!important
+}
+
+.vjs-custom-skin > .video-js .vjs-mouse-display:after,.vjs-custom-skin > .video-js .vjs-play-progress:after {
+  padding: 0 .4em .3em
+}
+
+.video-js.vjs-ended .vjs-loading-spinner {
+  display: none;
+}
+
+.video-js.vjs-ended .vjs-big-play-button {
+  display: block !important;
+}
+
+.video-js.vjs-ended .vjs-big-play-button,.video-js.vjs-paused .vjs-big-play-button,.vjs-paused.vjs-has-started.vjs-custom-skin > .video-js .vjs-big-play-button {
+  display: block
+}
+
+.vjs-custom-skin > .video-js .vjs-big-play-button {
+  top: 50%;
+  left: 50%;
+  margin-left: -1.5em;
+  margin-top: -1em
+}
+
+.vjs-custom-skin > .video-js .vjs-big-play-button {
+  background-color: rgba(0,0,0,0.45);
+  font-size: 3.5em;
+  /* border-radius: 50%; */
+  height: 2em !important;
+  line-height: 2em !important;
+  margin-top: -1em !important
+}
+
+.video-js:hover .vjs-big-play-button,.vjs-custom-skin > .video-js .vjs-big-play-button:focus,.vjs-custom-skin > .video-js .vjs-big-play-button:active {
+  background-color: #7B1FA2
+}
+
+.vjs-custom-skin > .video-js .vjs-loading-spinner {
+  border-color: #7B1FA2
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar2 {
+  background-color: #FFFFFF
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar {
+   /*background-color: rgba(0,0,0,0.3) !important;*/
+  color: #E91E63;
+  font-size: 14px
+}
+
+.vjs-custom-skin > .video-js .vjs-play-progress,.vjs-custom-skin > .video-js  .vjs-volume-level {
+  background-color: #263238
+}
+
+.vjs-custom-skin > .video-js .vjs-play-progress:before {
+  top: -0.3em;
+}
+
+.vjs-custom-skin > .video-js .vjs-progress-control:hover .vjs-progress-holder {
+  font-size: 1.3em;
+}
+
+.vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
+  left: 0em;
+}
+
+.vjs-custom-skin > .video-js .vjs-menu li {
+  padding: 0;
+  line-height: 2em;
+  font-size: 1.1em;
+  font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
+}
+
+.vjs-custom-skin > .video-js .vjs-time-tooltip,
+.vjs-custom-skin > .video-js .vjs-mouse-display:after, 
+.vjs-custom-skin > .video-js .vjs-play-progress:after {
+  border-radius: 0;
+  font-size: 1em;
+  padding: 0;
+  width: 3em;
+  height: 1.5em;
+  line-height: 1.5em;
+  top: -3em;
+  -webkit-border-radius: 10px;
+      -moz-border-radius: 10px;
+      border-radius: 10px;
+      border: 0px;
+      background-color: #7B1FA2;
+}
+
+.vjs-custom-skin > .video-js .vjs-menu-button-popup .vjs-menu {
+  width: 5em;
+  left: -1em;
+}
+
+.vjs-custom-skin > .video-js .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
+  left: 0;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button .vjs-menu {
+   /*order: 4;*/
+}
+
+ /*排序顺序*/
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-play-control {
+  order: 0;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-time-control {
+  min-width: 1em;
+  padding: 0;
+  margin: 0 .1em;
+  text-align: center;
+  display: block;
+  order: 1;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-playback-rate .vjs-playback-rate-value{
+  font-size: 1.2em;
+  line-height: 2.4;
+}
+
+.vjs-custom-skin > .video-js .vjs-progress-control.vjs-control {
+  order: 2;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-volume-menu-button {
+  order: 3;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button {
+  order: 4;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button .vjs-resolution-button-label {
+  display: block;
+  line-height: 3em;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-playback-rate {
+  order: 5;
+}
+
+.vjs-custom-skin > .video-js .vjs-control-bar .vjs-fullscreen-control {
+  /* order: 6; */
+  display: none;
+}
+
+6. Content.vue
+<template>
+    <div :style="contentBorderStyl">
+        <div :style="outerStyl">
+            <video-player 
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+                @play="onPlayerPlay($event)"
+                @pause="onPlayerPause($event)"
+                @ended="onPlayerEnded($event)"
+                @loadeddata="onPlayerLoadeddata($event)"
+                @waiting="onPlayerWaiting($event)"
+                @playing="onPlayerPlaying($event)"
+                @timeupdate="onPlayerTimeupdate($event)"
+                @canplay="onPlayerCanplay($event)"
+                @canplaythrough="onPlayerCanplaythrough($event)"
+                @ready="playerReadied"
+                @statechanged="playerStateChanged($event)"
+            >
+            </video-player>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.085, null)" v-if="currentTime > 1 && currentTime < 1.5">
+                <app-user-info :currentTime="currentTime" :windowWidth="windowWidth" :contentSize="contentSize"/>
+            </div>   
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.085, null)" v-if="currentTime > 12.7 && currentTime < 18.93">
+                <app-welcome :userInfo="userInfo" :windowWidth="windowWidth" :contentSize="contentSize"/>
+            </div>   
+            </transition>
+
+            <transition name="slide-fade">       
+            <div :style="overlayStyl(2000, 0.1, null, 0.055, null)" v-if="currentTime > 19.5 && currentTime < 23.3">
+                <app-info :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.078, null)" v-if="currentTime > 24.8 && currentTime < 29.2">
+                <app-warn :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">       
+            <div :style="overlayStyl(2000, 0.1, null, 0.048, null)" v-if="currentTime > 30.5 && currentTime < 35.35">
+                <app-opt :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">       
+            <div :style="overlayStyl(2000, 0.1, null, 0.08, null)" v-if="currentTime > 35.75 && currentTime < 43.3">
+                <app-lose :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.028, null)" v-if="currentTime > 46 && currentTime < 53">
+                <app-balance-info :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :lose="lose" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.06, null)" v-if="currentTime > 54 && currentTime < 59">
+                <app-options :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :lose="lose" :balanceInfo="balanceInfo" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.05, null)" v-if="currentTime >= 64 && !isOptionSelected">
+                <app-select-option :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :lose="lose" :balanceInfo="balanceInfo" :options="options" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.045, null)" v-if="currentTime > 73.5 && isOptionSelected && !isTermChecked">
+                <app-brief :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :lose="lose" :balanceInfo="balanceInfo" :options="options" :selectOption="selectOption" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.05, null, 0.025, null)" v-if="currentTime > 81.5 && isTermChecked && isOptionSelected">
+                <app-finishing :windowWidth="windowWidth" :userInfo="userInfo" :welcome="welcome" :info="info" :warn="warn" :opt="opt" :lose="lose" :balanceInfo="balanceInfo" :options="options" :selectOption="selectOption" :brief="brief" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <div :style="overlayStyl(1500, 0, null, 0, null)" v-if="pausePlayed">
+                <app-disable-div :contentSize="contentSize"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import './custom-theme.css'
+import UserInfo from './interactions/UserInfo'
+import Welcome from './interactions/Welcome'
+import Info from './interactions/Info'
+import Warn from './interactions/Warn'
+import Opt from './interactions/Opt'
+import Lose from './interactions/Lose'
+import BalanceInfo from './interactions/BalanceInfo'
+import Options from './interactions/Options'
+import SelectOption from './interactions/SelectOption'
+import Brief from './interactions/Brief'
+import Finishing from './interactions/Finishing'
+import DisableDiv from '../video/DisableDiv'
+
+export default {
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            duration: 0,
+            currentTime: 0,
+            videoStatus: null,
+            videoStatusUp: {},
+            contentBorderStyl: {},
+            username: 'NewUser',
+            playerOptions: {
+                    autoplay: false,
+                    muted: false,
+                    language: 'en',
+                    controls: true,
+                    sources: [{
+                    type: "video/mp4",
+                    src: "/static/workspace/content/videos/fsspartone-0MnJ3tp12JzE_beta.mp4",
+                }],
+                poster: "/static/workspace/content/images/fsslogo.png"                
+                },
+        }
+    },
+    computed: {
+        player() {
+            return this.$refs.videoPlayer.player
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        userInfo () {
+            return this.$store.getters['tal/userInfo']
+        },
+        isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },
+        isOptionSelected (){
+            return this.$store.getters['tal/isOptionSelected']
+        },
+        isTermChecked (){
+            return this.$store.getters['tal/isTermChecked']
+        },
+        isEditSelected (){
+            return this.$store.getters['tal/isEditSelected']
+        },
+        welcome () {
+            return this.$store.getters['tal/welcome']
+        },
+        info () {
+            return this.$store.getters['tal/info']
+        },
+        warn () {
+            return this.$store.getters['tal/warn']
+        },
+        opt () {
+            return this.$store.getters['tal/opt']
+        },
+        optionnow () {
+            return this.$store.getters['tal/optionnow']
+        },
+        lose () {
+            return this.$store.getters['tal/lose']
+        },
+        balanceInfo () {
+            return this.$store.getters['tal/balanceInfo']
+        },
+        options () {
+            return this.$store.getters['tal/options']
+        },
+        selectOption () {
+            return this.$store.getters['tal/selectOption']
+        },
+        brief () {
+            return this.$store.getters['tal/brief']
+        },
+        pausePlayed () {
+            return this.$store.getters['tal/pausePlayed'](this.currentTime, this.isOptionSelected)
+        },
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        overlayStyl () {
+            return this.$store.getters['video/overlayStyl'](this.contentSize)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        }
+    },
+    watch: {
+        setOverlayStyl (overlay) {
+            return this.overlayStyl(overlay.opacity, overlay.top, overlay.bottom, overlay.left, overlay.right)
+        },
+        isUserInfoSubmitted () {
+            if (this.isUserInfoSubmitted) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        pausePlayed () {
+            if (this.pausePlayed) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        isOptionSelected () {
+            if (this.isOptionSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isTermChecked () {
+            if (this.isTermChecked) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        },
+        isEditSelected () {
+            if (this.isEditSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        }
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+            this.$store.commit('video/updateWindowSize', { width: this.windowWidth, height: this.windowHeight })
+            
+            this.player.width(this.contentSize.width)
+            this.player.height(this.contentSize.height)
+                if (!this.player.paused()) {
+                    setTimeout(() => {
+                        this.player.muted(false)
+                        this.player.currentTime(this.currentTime)
+                        this.player.play()
+                    }, 200)
+                }
+            else {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        onPlayerPlay(player) {
+            this.videoStatus = 'play'
+        },
+        onPlayerPause(player) {
+            this.videoStatus = 'paused'
+            this.duration = player.duration()
+            this.currentTime = player.currentTime()
+        },
+        onPlayerEnded(player) {
+            this.videoStatus = 'ended'
+        },
+        onPlayerLoadeddata(player) {
+        },
+        onPlayerWaiting(player) {
+            //this.videoStatus = 'waiting'
+        },
+        onPlayerPlaying(player) {
+            this.videoStatus = 'playing'
+        },
+        onPlayerTimeupdate(player) {
+            if (!isNaN(player.duration()) && isFinite(player.duration())) {
+                this.duration = player.duration()
+                this.currentTime = player.currentTime()
+            }
+        },
+        onPlayerCanplay(player) {
+            this.videoStatus = 'canplay'
+        },
+        onPlayerCanplaythrough(player) {
+        },
+        playerStateChanged(playerCurrentState) {
+            this.videoStatusUp = JSON.stringify(playerCurrentState)
+        },
+        playerReadied(player) {
+        },
+        /*updateUserInfo (info) {
+            this.$store.commit('tal/updateUserInfo', info)
+        },
+        name () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    //localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else {
+                this.$store.commit('tal/updateUserInfo', this.username)
+                this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                //localStorage.setItem('name', this.username);
+                return this.username;
+            }
+        },*/
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize();
+            //this.name();
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    created() {
+        //this.name();
+    },
+    components: {
+        appUserInfo: UserInfo,
+        appWelcome: Welcome,
+        appInfo: Info,
+        appWarn: Warn,
+        appOpt: Opt,
+        appLose: Lose,
+        appBalanceInfo: BalanceInfo,
+        appOptions: Options,
+        appSelectOption: SelectOption,
+        appBrief: Brief,
+        appFinishing: Finishing,
+        appDisableDiv: DisableDiv
+    }
+}
+</script>
+
+<style>
+.tmp {
+    border: 2px solid white;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(5px);
+  opacity: 0;
+}
+</style>
+
+7. ContentNotapple.vue
+<template>
+    <div :style="contentBorderStyl">
+        <div :style="outerStyl">
+            <video-player 
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+                @play="onPlayerPlay($event)"
+                @pause="onPlayerPause($event)"
+                @ended="onPlayerEnded($event)"
+                @loadeddata="onPlayerLoadeddata($event)"
+                @waiting="onPlayerWaiting($event)"
+                @playing="onPlayerPlaying($event)"
+                @timeupdate="onPlayerTimeupdate($event)"
+                @canplay="onPlayerCanplay($event)"
+                @canplaythrough="onPlayerCanplaythrough($event)"
+                @ready="playerReadied"
+                @statechanged="playerStateChanged($event)"
+            >
+            </video-player>
+            
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.05, null)" v-if="currentTime >= 89  && !isOptionSelected">
+                <app-select-option :windowWidth="windowWidth" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.05, null)" v-if="currentTime >= 95  && isOptionSelected">
+                <app-select-percentage :windowWidth="windowWidth" :contentSize="contentSize" :selectOption="selectOption"/>
+            </div>
+            </transition>
+            
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.05, null)" v-if="currentTime >= 106  && !isYearSelected">
+                <app-select-year :windowWidth="windowWidth" :contentSize="contentSize" :selectOption="selectOption" :selectPercentage="selectPercentage"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.045, null)" v-if="currentTime >= 110 && !isSalaryInfoSubmitted">
+                <app-input-gmi :windowWidth="windowWidth" :contentSize="contentSize" :selectOption="selectOption" :selectYear="selectYear" :selectPercentage="selectPercentage"/>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.045, null)" v-if="currentTime >= 112 && isSalaryInfoSubmitted">
+                <app-input-date :windowWidth="windowWidth" :contentSize="contentSize" :selectOption="selectOption" :selectYear="selectYear" :selectPercentage="selectPercentage" :salaryInfo="salaryInfo"/>
+            </div>
+            </transition>
+            
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.05, null)" v-if="currentTime >= 117  && !isPeriodSelected">
+                <app-select-period :windowWidth="windowWidth" :contentSize="contentSize" :selectOption="selectOption" :selectYear="selectYear" :salaryInfo="salaryInfo" :datepickerInfo="datepickerInfo" :selectPercentage="selectPercentage"/>
+            </div>
+            </transition>
+
+            <div :style="overlayStyl(1500, 0, null, 0, null)" v-if="currentTime >= 124" && isPercentageY>
+                <app-content-notapple-two :currentTime="currentTime" :windowWidth="windowWidth" :contentSize="contentSize" :selectY="selectY"/>
+            </div>
+
+            <div :style="overlayStyl(1500, 0, null, 0, null)" v-if="currentTime >= 124" && isPercentageN>
+                <app-content-notapple-three :currentTime="currentTime" :windowWidth="windowWidth" :contentSize="contentSize" :selectN="selectN"/>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import './custom-theme.css'
+import SelectOption from './interactions/SelectOption'
+import SelectPercentage from './interactions/SelectPercentage'
+import SelectYear from './interactions/SelectYear'
+import InputGmi from './interactions/InputGmi'
+import InputDate from './interactions/InputDate'
+import SelectPeriod from './interactions/SelectPeriod'
+import DisableDiv from '../video/DisableDiv'
+import ContentNotappleTwo from './ContentNotappleTwo'
+import ContentNotappleThree from './ContentNotappleThree'
+
+export default {
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            duration: 0,
+            currentTime: 0,
+            videoStatus: null,
+            videoStatusUp: {},
+            contentBorderStyl: {},
+            playerOptions: {
+                    autoplay: false,
+                    muted: false,
+                    language: 'en',
+                    controls: true,
+                    sources: [{
+                    type: "video/mp4",
+                    src: "/static/workspace/content/videos/fsspartone-0MnJ3tp12JzE_beta.mp4",
+                }],
+                poster: "/static/workspace/content/images/0.jpg"                
+                },
+        }
+    },
+    computed: {
+        player() {
+            return this.$refs.videoPlayer.player
+        },
+        salaryInfo () {
+            return this.$store.getters['tal/salaryInfo']
+        },
+        isSalaryInfoSubmitted () {
+            return this.$store.getters['tal/isSalaryInfoSubmitted']
+        },
+        datepickerInfo () {
+            return this.$store.getters['tal/datepickerInfo']
+        },
+        isDatepickerInfoSubmitted () {
+            return this.$store.getters['tal/isDatepickerInfoSubmitted']
+        },
+        selectOption () {
+            return this.$store.getters['tal/selectOption']
+        },
+        selectPercentage () {
+            return this.$store.getters['tal/selectPercentage']
+        },
+        selectY () {
+            return this.$store.getters['tal/selectY']
+        },
+        selectN () {
+            return this.$store.getters['tal/selectN']
+        },
+        isOptionSelected (){
+            return this.$store.getters['tal/isOptionSelected']
+        },
+        isPercentageSelected (){
+            return this.$store.getters['tal/isPercentageSelected']
+        },
+        isPercentageY (){
+            return this.$store.getters['tal/isPercentageY']
+        },
+        isPercentageN (){
+            return this.$store.getters['tal/isPercentageN']
+        },
+        selectYear () {
+            return this.$store.getters['tal/selectYear']
+        },
+        isYearSelected (){
+            return this.$store.getters['tal/isYearSelected']
+        },
+        selectPeriod () {
+            return this.$store.getters['tal/selectPeriod']
+        },
+        isPeriodSelected (){
+            return this.$store.getters['tal/isPeriodSelected']
+        },
+        pausePlayed () {
+            return this.$store.getters['tal/pausePlayed'](this.currentTime, this.isOptionSelected)
+        },
+        pausePlayedY () {
+            return this.$store.getters['tal/pausePlayedY'](this.currentTime, this.isPercentageY)
+        },
+        pausePlayedN () {
+            return this.$store.getters['tal/pausePlayedN'](this.currentTime, this.isPercentageN)
+        },
+        pausePlayedYear () {
+            return this.$store.getters['tal/pausePlayedYear'](this.currentTime, this.isYearSelected)
+        },
+        pausePlayedSalary () {
+            return this.$store.getters['tal/pausePlayedSalary'](this.currentTime, this.isSalaryInfoSubmitted)
+        },
+        pausePlayedDatepicker () {
+            return this.$store.getters['tal/pausePlayedDatepicker'](this.currentTime, this.isDatepickerInfoSubmitted)
+        },
+        selectSalary () {
+            return this.$store.getters['tal/selectSalary']
+        },
+        isSalarySelected (){
+            return this.$store.getters['tal/isSalarySelected']
+        },
+        pausePlayedPeriod () {
+            return this.$store.getters['tal/pausePlayedPeriod'](this.currentTime, this.isPeriodSelected)
+        },
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        overlayStyl () {
+            return this.$store.getters['video/overlayStyl'](this.contentSize)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        }
+    },
+    watch: {
+        setOverlayStyl (overlay) {
+            return this.overlayStyl(overlay.opacity, overlay.top, overlay.bottom, overlay.left, overlay.right)
+        },
+        isSalaryInfoSubmitted () {
+            if (this.isSalaryInfoSubmitted) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isDatepickerInfoSubmitted () {
+            if (this.isDatepickerInfoSubmitted) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        pausePlayed () {
+            if (this.pausePlayed) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        pausePlayedY () {
+            if (this.pausePlayedY) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        pausePlayedN () {
+            if (this.pausePlayedN) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        pausePlayedYear () {
+            if (this.pausePlayedYear) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        pausePlayedPeriod () {
+            if (this.pausePlayedPeriod) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        pausePlayedSalary () {
+            if (this.pausePlayedSalary) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        pausePlayedDatepicker () {
+            if (this.pausePlayedDatepicker) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        isOptionSelected () {
+            if (this.isOptionSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isPercentageY () {
+            if (this.isPercentageY) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isPercentageN () {
+            if (this.isPercentageN) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isYearSelected () {
+            if (this.isYearSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isPeriodSelected () {
+            if (this.isPeriodSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        }
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+            this.$store.commit('video/updateWindowSize', { width: this.windowWidth, height: this.windowHeight })
+            
+            this.player.width(this.contentSize.width)
+            this.player.height(this.contentSize.height)
+                if (!this.player.paused()) {
+                    setTimeout(() => {
+                        this.player.muted(false)
+                        this.player.currentTime(this.currentTime)
+                        this.player.play()
+                    }, 200)
+                }
+            else {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)
+            }
+        },
+        onPlayerPlay(player) {
+            this.videoStatus = 'play'
+        },
+        onPlayerPause(player) {
+            this.videoStatus = 'paused'
+            this.duration = player.duration()
+            this.currentTime = player.currentTime()
+        },
+        onPlayerEnded(player) {
+            this.videoStatus = 'ended'
+        },
+        onPlayerLoadeddata(player) {
+        },
+        onPlayerWaiting(player) {
+            //this.videoStatus = 'waiting'
+        },
+        onPlayerPlaying(player) {
+            this.videoStatus = 'playing'
+        },
+        onPlayerTimeupdate(player) {
+            if (!isNaN(player.duration()) && isFinite(player.duration())) {
+                this.duration = player.duration()
+                this.currentTime = player.currentTime()
+            }
+        },
+        onPlayerCanplay(player) {
+            this.videoStatus = 'canplay'
+        },
+        onPlayerCanplaythrough(player) {
+        },
+        playerStateChanged(playerCurrentState) {
+            this.videoStatusUp = JSON.stringify(playerCurrentState)
+        },
+        playerReadied(player) {
+        }
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize()
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    components: {
+        appSelectOption: SelectOption,
+        appSelectPercentage: SelectPercentage,
+        appSelectYear: SelectYear,
+        appSelectPeriod: SelectPeriod,
+        appInputGmi: InputGmi,
+        appInputDate: InputDate,
+        appContentNotappleTwo: ContentNotappleTwo,
+        appContentNotappleThree: ContentNotappleThree,
+        appDisableDiv: DisableDiv
+    }
+}
+</script>
+
+<style>
+.tmp {
+    border: 2px solid white;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(5px);
+  opacity: 0;
+}
+</style>
+
+8. ContentNotappleThree.vue
+<template>
+    <div :style="contentBorderStyl">
+        <div :style="outerStyl">
+            <video-player 
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+                @play="onPlayerPlay($event)"
+                @pause="onPlayerPause($event)"
+                @ended="onPlayerEnded($event)"
+                @loadeddata="onPlayerLoadeddata($event)"
+                @waiting="onPlayerWaiting($event)"
+                @playing="onPlayerPlaying($event)"
+                @timeupdate="onPlayerTimeupdate($event)"
+                @canplay="onPlayerCanplay($event)"
+                @canplaythrough="onPlayerCanplaythrough($event)"
+                @ready="playerReadied"
+                @statechanged="playerStateChanged($event)"
+            >
+            </video-player>
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import './custom-theme.css'
+
+export default {
+    props: ['selectN'],
+
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            duration: 0,
+            currentTime: 0,
+            videoStatus: null,
+            videoStatusUp: {},
+            contentBorderStyl: {},
+            playerOptions: {
+                    autoplay: true,
+                    muted: false,
+                    language: 'en',
+                    controls: true,
+                    sources: [{
+                    type: "video/mp4",
+                    src: "/static/workspace/content/videos/fsspartthree-0VZM21hJmsQM_beta.mp4",
+            }],
+            poster: "/static/workspace/content/images/Find-a-planner_Sam.png"             
+            }
+        }
+    },
+    computed: {
+        player() {
+            return this.$refs.videoPlayer.player
+        },
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        overlayStyl () {
+            return this.$store.getters['video/overlayStyl'](this.contentSize)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        }
+    },
+    watch: {
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+            this.$store.commit('video/updateWindowSize', { width: this.windowWidth, height: this.windowHeight })
+            
+            this.player.width(this.contentSize.width)
+            this.player.height(this.contentSize.height)
+            if (!this.pausePlayed) {
+                if (!this.player.paused()) {
+                    setTimeout(() => {
+                        this.player.muted(false)
+                        this.player.currentTime(this.currentTime)
+                        this.player.play()
+                    }, 200)
+                }
+            } else {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200) 
+            }
+        },
+        onPlayerPlay(player) {
+            this.videoStatus = 'play'
+        },
+        onPlayerPause(player) {
+            this.videoStatus = 'paused'
+            this.duration = player.duration()
+            this.currentTime = player.currentTime()
+        },
+        onPlayerEnded(player) {
+            this.videoStatus = 'ended'
+        },
+        onPlayerLoadeddata(player) {
+        },
+        onPlayerWaiting(player) {
+            //this.videoStatus = 'waiting'
+        },
+        onPlayerPlaying(player) {
+            this.videoStatus = 'playing'
+        },
+        onPlayerTimeupdate(player) {
+            if (!isNaN(player.duration()) && isFinite(player.duration())) {
+                this.duration = player.duration()
+                this.currentTime = player.currentTime()
+            }
+        },
+        onPlayerCanplay(player) {
+            this.videoStatus = 'canplay'
+        },
+        onPlayerCanplaythrough(player) {},
+        playerStateChanged(playerCurrentState) {
+            this.videoStatusUp = JSON.stringify(playerCurrentState)
+        },
+        playerReadied(player) {}
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize()
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    components: {
+    }
+}
+</script>
+
+<style>
+.tmp {
+    border: 2px solid black;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(5px);
+  opacity: 0;
+}
+</style>
+
+9. ContentNotappleTwo.vue
+<template>
+    <div :style="contentBorderStyl">
+        <div :style="outerStyl">
+            <video-player 
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+                @play="onPlayerPlay($event)"
+                @pause="onPlayerPause($event)"
+                @ended="onPlayerEnded($event)"
+                @loadeddata="onPlayerLoadeddata($event)"
+                @waiting="onPlayerWaiting($event)"
+                @playing="onPlayerPlaying($event)"
+                @timeupdate="onPlayerTimeupdate($event)"
+                @canplay="onPlayerCanplay($event)"
+                @canplaythrough="onPlayerCanplaythrough($event)"
+                @ready="playerReadied"
+                @statechanged="playerStateChanged($event)"
+            >
+            </video-player>
+<!--
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.045, null)" v-if="currentTime >= 3 && !isDownloadInfoSubmitted">
+                <app-download-file :windowWidth="windowWidth" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <div :style="overlayStyl(1500, 0, null, 0, null)" v-if="pausePlayed">
+                <app-disable-div :contentSize="contentSize"/>
+            </div>-->
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import './custom-theme.css'
+//import DownloadFile from './interactions/DownloadFile'
+
+export default {
+    props: ['selectY'],
+
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            duration: 0,
+            currentTime: 0,
+            videoStatus: null,
+            videoStatusUp: {},
+            contentBorderStyl: {},
+            playerOptions: {
+                    autoplay: true,
+                    muted: false,
+                    language: 'en',
+                    controls: true,
+                    sources: [{
+                    type: "video/mp4",
+                    src: "/static/workspace/content/videos/fssparttwo-0d2Vk8Jzt3XI_beta.mp4",
+            }],
+            poster: "/static/workspace/content/images/Find-a-planner_Sam.png"             
+            }
+        }
+    },
+    computed: {
+        player() {
+            return this.$refs.videoPlayer.player
+        },
+        /*selectPercentage () {
+            return this.$store.getters['tal/selectPercentage']
+        },
+        isPercentageSelected (){
+            return this.$store.getters['tal/isPercentageSelected']
+        },*/
+        /*
+        userInfo () {
+            return this.$store.getters['tal/userInfo']
+        },
+        isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },
+        isOptionSelected (){
+            return this.$store.getters['tal/isOptionSelected']
+        },
+        isTermChecked (){
+            return this.$store.getters['tal/isTermChecked']
+        },
+        isEditSelected (){
+            return this.$store.getters['tal/isEditSelected']
+        },
+        welcome () {
+            return this.$store.getters['tal/welcome']
+        },
+        info () {
+            return this.$store.getters['tal/info']
+        },
+        warn () {
+            return this.$store.getters['tal/warn']
+        },
+        lose () {
+            return this.$store.getters['tal/lose']
+        },
+        opt () {
+            return this.$store.getters['tal/opt']
+        },
+        balanceInfo () {
+            return this.$store.getters['tal/balanceInfo']
+        },
+        options () {
+            return this.$store.getters['tal/options']
+        },
+        selectOption () {
+            return this.$store.getters['tal/selectOption']
+        },
+        brief () {
+            return this.$store.getters['tal/brief']
+        },
+        isTrackSelected () {
+            return this.$store.getters['tal/isTrackSelected']
+        },
+        pausePlay () {
+            return this.$store.getters['tal/pausePlay'](this.currentTime, this.isUserInfoSubmitted)
+        },
+        pausePlayed () {
+            return this.$store.getters['tal/pausePlayed'](this.currentTime, this.isOptionSelected)
+        },*/
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        overlayStyl () {
+            return this.$store.getters['video/overlayStyl'](this.contentSize)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        }
+    },
+    watch: {
+        /*isUserInfoSubmitted () {
+            if (this.isUserInfoSubmitted) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        pausePlayed () {
+            if (this.pausePlayed) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        isOptionSelected () {
+            if (this.isOptionSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isTermChecked () {
+            if (this.isTermChecked) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        },
+        isEditSelected () {
+            if (this.isEditSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        }*/
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+            this.$store.commit('video/updateWindowSize', { width: this.windowWidth, height: this.windowHeight })
+            
+            this.player.width(this.contentSize.width)
+            this.player.height(this.contentSize.height)
+            if (!this.pausePlayed) {
+                if (!this.player.paused()) {
+                    setTimeout(() => {
+                        this.player.muted(false)
+                        this.player.currentTime(this.currentTime)
+                        this.player.play()
+                    }, 200)
+                }
+            } else {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200) 
+            }
+        },
+        onPlayerPlay(player) {
+            this.videoStatus = 'play'
+        },
+        onPlayerPause(player) {
+            this.videoStatus = 'paused'
+            this.duration = player.duration()
+            this.currentTime = player.currentTime()
+        },
+        onPlayerEnded(player) {
+            this.videoStatus = 'ended'
+        },
+        onPlayerLoadeddata(player) {
+        },
+        onPlayerWaiting(player) {
+            //this.videoStatus = 'waiting'
+        },
+        onPlayerPlaying(player) {
+            this.videoStatus = 'playing'
+        },
+        onPlayerTimeupdate(player) {
+            if (!isNaN(player.duration()) && isFinite(player.duration())) {
+                this.duration = player.duration()
+                this.currentTime = player.currentTime()
+            }
+        },
+        onPlayerCanplay(player) {
+            this.videoStatus = 'canplay'
+        },
+        onPlayerCanplaythrough(player) {},
+        playerStateChanged(playerCurrentState) {
+            this.videoStatusUp = JSON.stringify(playerCurrentState)
+        },
+        playerReadied(player) {}
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize()
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    components: {
+        //appDownloadFile: DownloadFile
+    }
+}
+</script>
+
+<style>
+.tmp {
+    border: 2px solid black;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(5px);
+  opacity: 0;
+}
+</style>
+
+10. ContentNotappleTwo.vue
+<template>
+    <div :style="contentBorderStyl">
+        <div :style="outerStyl">
+            <video-player 
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+                @play="onPlayerPlay($event)"
+                @pause="onPlayerPause($event)"
+                @ended="onPlayerEnded($event)"
+                @loadeddata="onPlayerLoadeddata($event)"
+                @waiting="onPlayerWaiting($event)"
+                @playing="onPlayerPlaying($event)"
+                @timeupdate="onPlayerTimeupdate($event)"
+                @canplay="onPlayerCanplay($event)"
+                @canplaythrough="onPlayerCanplaythrough($event)"
+                @ready="playerReadied"
+                @statechanged="playerStateChanged($event)"
+            >
+            </video-player>
+<!--
+            <transition name="slide-fade">
+            <div :style="overlayStyl(2000, 0.1, null, 0.045, null)" v-if="currentTime >= 3 && !isDownloadInfoSubmitted">
+                <app-download-file :windowWidth="windowWidth" :contentSize="contentSize"/>
+            </div>
+            </transition>
+
+            <div :style="overlayStyl(1500, 0, null, 0, null)" v-if="pausePlayed">
+                <app-disable-div :contentSize="contentSize"/>
+            </div>-->
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+import './custom-theme.css'
+//import DownloadFile from './interactions/DownloadFile'
+
+export default {
+    props: ['selectY'],
+
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            duration: 0,
+            currentTime: 0,
+            videoStatus: null,
+            videoStatusUp: {},
+            contentBorderStyl: {},
+            playerOptions: {
+                    autoplay: true,
+                    muted: false,
+                    language: 'en',
+                    controls: true,
+                    sources: [{
+                    type: "video/mp4",
+                    src: "/static/workspace/content/videos/fssparttwo-0d2Vk8Jzt3XI_beta.mp4",
+            }],
+            poster: "/static/workspace/content/images/Find-a-planner_Sam.png"             
+            }
+        }
+    },
+    computed: {
+        player() {
+            return this.$refs.videoPlayer.player
+        },
+        /*selectPercentage () {
+            return this.$store.getters['tal/selectPercentage']
+        },
+        isPercentageSelected (){
+            return this.$store.getters['tal/isPercentageSelected']
+        },*/
+        /*
+        userInfo () {
+            return this.$store.getters['tal/userInfo']
+        },
+        isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },
+        isOptionSelected (){
+            return this.$store.getters['tal/isOptionSelected']
+        },
+        isTermChecked (){
+            return this.$store.getters['tal/isTermChecked']
+        },
+        isEditSelected (){
+            return this.$store.getters['tal/isEditSelected']
+        },
+        welcome () {
+            return this.$store.getters['tal/welcome']
+        },
+        info () {
+            return this.$store.getters['tal/info']
+        },
+        warn () {
+            return this.$store.getters['tal/warn']
+        },
+        lose () {
+            return this.$store.getters['tal/lose']
+        },
+        opt () {
+            return this.$store.getters['tal/opt']
+        },
+        balanceInfo () {
+            return this.$store.getters['tal/balanceInfo']
+        },
+        options () {
+            return this.$store.getters['tal/options']
+        },
+        selectOption () {
+            return this.$store.getters['tal/selectOption']
+        },
+        brief () {
+            return this.$store.getters['tal/brief']
+        },
+        isTrackSelected () {
+            return this.$store.getters['tal/isTrackSelected']
+        },
+        pausePlay () {
+            return this.$store.getters['tal/pausePlay'](this.currentTime, this.isUserInfoSubmitted)
+        },
+        pausePlayed () {
+            return this.$store.getters['tal/pausePlayed'](this.currentTime, this.isOptionSelected)
+        },*/
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        overlayStyl () {
+            return this.$store.getters['video/overlayStyl'](this.contentSize)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        }
+    },
+    watch: {
+        /*isUserInfoSubmitted () {
+            if (this.isUserInfoSubmitted) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        pausePlayed () {
+            if (this.pausePlayed) {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200)  
+            }
+        },
+        isOptionSelected () {
+            if (this.isOptionSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                    this.player.play()
+                }, 200)
+            }
+        },
+        isTermChecked () {
+            if (this.isTermChecked) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        },
+        isEditSelected () {
+            if (this.isEditSelected) {
+                setTimeout(() => {
+                    this.player.muted(false)
+                    this.player.currentTime(this.currentTime)
+                }, 200)
+            }
+        }*/
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+            this.$store.commit('video/updateWindowSize', { width: this.windowWidth, height: this.windowHeight })
+            
+            this.player.width(this.contentSize.width)
+            this.player.height(this.contentSize.height)
+            if (!this.pausePlayed) {
+                if (!this.player.paused()) {
+                    setTimeout(() => {
+                        this.player.muted(false)
+                        this.player.currentTime(this.currentTime)
+                        this.player.play()
+                    }, 200)
+                }
+            } else {
+                setTimeout(() => {
+                    this.player.pause()
+                }, 200) 
+            }
+        },
+        onPlayerPlay(player) {
+            this.videoStatus = 'play'
+        },
+        onPlayerPause(player) {
+            this.videoStatus = 'paused'
+            this.duration = player.duration()
+            this.currentTime = player.currentTime()
+        },
+        onPlayerEnded(player) {
+            this.videoStatus = 'ended'
+        },
+        onPlayerLoadeddata(player) {
+        },
+        onPlayerWaiting(player) {
+            //this.videoStatus = 'waiting'
+        },
+        onPlayerPlaying(player) {
+            this.videoStatus = 'playing'
+        },
+        onPlayerTimeupdate(player) {
+            if (!isNaN(player.duration()) && isFinite(player.duration())) {
+                this.duration = player.duration()
+                this.currentTime = player.currentTime()
+            }
+        },
+        onPlayerCanplay(player) {
+            this.videoStatus = 'canplay'
+        },
+        onPlayerCanplaythrough(player) {},
+        playerStateChanged(playerCurrentState) {
+            this.videoStatusUp = JSON.stringify(playerCurrentState)
+        },
+        playerReadied(player) {}
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize()
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    components: {
+        //appDownloadFile: DownloadFile
+    }
+}
+</script>
+
+<style>
+.tmp {
+    border: 2px solid black;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(5px);
+  opacity: 0;
+}
+</style>
+
+
+
 
