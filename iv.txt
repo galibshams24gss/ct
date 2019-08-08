@@ -32,7 +32,8 @@ export default {
 }
 </script>
 
-B. Tal.vue
+B.tal 
+Tal.vue
 <template>
     <v-container fluid class="pa-1">
         <app-header class="mt-3 mb-3"/>
@@ -2264,6 +2265,4706 @@ export default {
 }
 </style>
 
+interactions(folder)
+a. BalanceInfo.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">{{ `${name}`+ ','}}<br>
+                Your account-balance is less than $6,000 &
+                last contribution was 2 years ago.
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
 
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome', 'info', 'warn', 'opt', 'lose','contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        name () {
+            return this.$store.getters['tal/userInfo']
+        },
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom, #E91E63 0%, #263238 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 40%;
+    font-size: 0.80em;
+    font-weight: bold;
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 265px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 215px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 255px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 215px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 270px;
+        text-align: center;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 180px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 180px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 227px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 315px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+b. Brief.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="brief">
+                <span :style="setInputStyl()"><u>{{ `${'Confirmation'}` }}</u><br>
+                <u>Name</u>: {{name}}<br>
+                <u>Option</u>: {{selectedOption}}<br>
+                <v-btn v-if="show" color="purple darken-2" small dark id="crd" @click="editOption">Change</v-btn><br>
+                <input type="checkbox" name="confirmation" value="terms" id='terms' @change="checkTerms"> I agree with
+                <a target="_blank" href="https://www.tal.com.au/" @click.stop>TAL</a>
+                's Terms & Conditions
+                </span>
+            </div>
+
+            <transition name="slide-fade">
+            <div v-if="!show" class="input-wrap" ref="options">
+                <span :style="setInputStyl()"><u>{{ `${'Choose Option'}` }}</u><br>
+                <input type="radio" id="optionOne" value="Keep cover" v-model="selected" @change="checkOption(selected)">
+                <label for="optionOne">Opt to keep cover</label><br>
+                <input type="radio" id="optionTwo" value="Lose cover" v-model="selected" @change="checkOption(selected)">
+                <label for="optionTwo">Opt to lose cover</label><br>
+                <input type="radio" id="optionThree" value="Contribute" v-model="selected" @change="checkOption(selected)">
+                <label for="optionThree">Start contributing</label><br>
+                <input type="radio" id="optionFour" value="Roll-in funds" v-model="selected" @change="checkOption(selected)">
+                <label for="optionFour">Roll-in funds</label>
+                </span>
+            </div>
+            </transition>
+
+            <transition name="slide-fade">
+            <div v-if="shownext" class="input-wrapper" ref="briefnext">
+                <span :style="setInputStyl()"><u>{{ `${'Confirmation'}` }}</u><br>
+                <u>Name</u>: {{name}}<br>
+                <u>Option</u>: {{selectedOption}}<br>
+                <input type="checkbox" name="confirmation" value="terms" id='terms' @change="checkTerms"> I agree with
+                <a target="_blank" href="https://www.tal.com.au/" @click.stop>TAL</a>
+                's Terms & Conditions
+                </span>
+            </div>
+            </transition>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn','opt','lose','balanceInfo','options','selectOption','contentSize'],
+
+    data() {
+        return {
+            selected: '',
+            checked : false,
+            submitted:false,
+            show: true,
+            shownext: false,
+            lastVisitedTime: new Date().toDateString()+'-'+new Date().toLocaleTimeString()
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        name () {
+            return this.$store.getters['tal/userInfo']
+        },
+        selectedOption () {
+            return this.$store.getters['tal/selectedOption'];
+        },
+        lastVisitTime () {
+            return this.$store.getters['tal/lastVisitTime'];
+        },
+        isTermChecked () {
+            return this.$store.getters['tal/isTermChecked'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden'
+            }
+        }
+    },
+
+    methods: {
+        /*checkTerms(){
+            if(location.href.indexOf("DS00001") !=-1 && this.name == "Daniel"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                    localStorage.setItem("on_load_counter", this.siteCounter);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("GS00002") !=-1 && this.name == "Galib"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("AY00003") !=-1 && this.name == "Andrew"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("RE00004") !=-1 && this.name == "Rene"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("JK00005") !=-1 && this.name == "Bernie"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("JP00006") !=-1 && this.name == "Justin"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("PK00007") !=-1 && this.name == "Peter"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("VS00008") !=-1 && this.name == "Vaibhav"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("YT00009") !=-1 && this.name == "Yegor"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("JC00010") !=-1 && this.name == "Joanna"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("BN00011") !=-1 && this.name == "Benjamin"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else if(location.href.indexOf("KL00012") !=-1 && this.name == "Karen"){
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            } else{
+                this.$store.commit('tal/selectedOption', this.selectedOption)
+                this.$store.commit('tal/updateLastVisitTime', this.lastVisitedTime)
+                console.log("User: "+ this.name);
+                console.log("Option: "+ this.selectedOption);
+                console.log("Time: "+ this.lastVisitedTime);
+                if(localStorage.getItem('name')){
+                    localStorage.setItem('option', this.selectedOption);
+                    localStorage.setItem('lastVisitTime', this.lastVisitedTime);
+                }
+                this.$refs.brief.style.display = "none";
+                this.$store.commit('tal/updateIsTermChecked', true);
+            }
+        },*/
+        checkTerms(){ //better and previous version
+            this.$refs.brief.style.display = "none";
+            this.$store.commit('tal/updateIsTermChecked', true);
+        },
+        editOption(){
+            this.show = false;
+            this.$refs.brief.style.display = "none";
+            this.$store.commit('tal/updateIsEditSelected', true);
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+        checkOption (v) {
+            this.shownext = true;
+            this.$store.commit('tal/selectedOption', this.selected);
+            this.$store.commit('tal/updateIsOptionSelected', true);
+            this.$refs.options.style.display = "none";
+        },
+        updateUserInfo (info) {
+            this.$store.commit('tal/updateUserInfo', info)
+        },
+        updateVisitTime (info) {
+            this.$store.commit('tal/updateVisitTime', info)
+        },
+        updateSelectOption (info) {
+            this.$store.commit('tal/selectOption', info)
+        }
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom,#E91E63 0%, #263238 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 53%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 140px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 198px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 242px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 245px;
+        text-align: center;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 198px;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 107px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 165px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 165px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 208px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 290px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+
+#crd {
+    width: 30px;
+    height: 20px;
+}
+
+.wrapbtn {
+    text-align: center;
+}
+
+.input-wrap {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom, #7B1FA2 0%, #263238 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 97%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrap{
+        text-align: center;
+        width: 200px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrap {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrap {
+    text-align: center;
+    width: 240px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrap{
+        width: 245px;
+        text-align: center;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrap{
+        text-align: center;
+        width: 200px;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrap{
+    width: 105px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrap {
+    text-align: center;
+    width: 140px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrap{
+    text-align: center;
+    width: 165px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrap{
+    text-align: center;
+    width: 165px;
+    }
+}
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrap {
+    width: 210px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrap {
+    width: 290px;
+    text-align: center;
+  }
+}
+</style>
+
+c. Diffwlc.vue
+<template>
+    <div></div>
+</template>
+<script>
+import eventBus from '@/eventBus'
+
+export default {
+    props: ['currentTime', 'windowWidth', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    methods:{
+        playSound(sound){
+            var audio =  new Audio(sound);
+            audio.play();
+        }
+    },
+    
+    created(){   
+        if(location.href.indexOf("DS00001") !=-1){
+            this.playSound('./static/workspace/content/audios/welcomeDaniel.mp3');
+        } else if(location.href.indexOf("GS00002") !=-1){
+            this.playSound('./static/workspace/content/audios/welcomeGalib.mp3');
+        } else if(location.href.indexOf("AY00003") !=-1){
+            this.playSound('./static/workspace/content/audios/wandrew.mp3');
+        } else if(location.href.indexOf("RE00004") !=-1){
+            this.playSound('./static/workspace/content/audios/wrene.mp3');
+        } else if(location.href.indexOf("JK00005") !=-1){
+            this.playSound('./static/workspace/content/audios/wbernie.mp3');
+        } else if(location.href.indexOf("JP00006") !=-1){
+            this.playSound('./static/workspace/content/audios/wjustin.mp3');
+        } else if(location.href.indexOf("PK00007") !=-1){
+            this.playSound('./static/workspace/content/audios/wpeter.mp3');
+        } else if(location.href.indexOf("VS00008") !=-1){
+            this.playSound('./static/workspace/content/audios/wvbhv.mp3');
+        } else if(location.href.indexOf("YT00009") !=-1){
+            this.playSound('./static/workspace/content/audios/wyegor.mp3');
+        } else if(location.href.indexOf("JC00010") !=-1){
+            this.playSound('./static/workspace/content/audios/wjoanna.mp3');
+        } else if(location.href.indexOf("BN00011") !=-1){
+            this.playSound('./static/workspace/content/audios/wbenj.mp3');
+        } else if(location.href.indexOf("KL00012") !=-1){
+            this.playSound('./static/workspace/content/audios/wkaren.mp3');
+        } else {
+            this.playSound('./static/workspace/content/audios/wthere.mp3');
+        }
+    }
+}
+</script>
+
+d. DisableDiv.vue
+<template>
+    <div :style="styl"></div>
+</template>
+
+<script>
+export default {
+    props: ['contentSize'],
+    computed: {
+        styl () {
+            return {
+                width: this.contentSize.width + 'px',
+                height: this.contentSize.height + 'px',
+                'background-color': '#B0BEC5',
+                opacity: '0.2',
+                filter: 'alpha(opacity=20)'         
+            }
+        }
+    }
+}
+</script>
+
+e. DownloadFile.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="inputs">
+                <a href="/static/workspace/content/images/170131 Application for IP for Industry members_F.pdf" class="input-base" target="_blank" :style="setInputStyl()">Download</a>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize'],
+    data() {
+        return {
+            download: "",
+            offsetTop: 0,
+            buttonClicked: false
+        }
+    },
+    computed: {
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        },
+        isDownloadInfoSubmitted () {
+            return this.$store.getters['tal/isDownloadInfoSubmitted']
+        },
+        pausePlayedDownload () {
+            return this.$store.getters['tal/pausePlayedDownload'](this.currentTime, this.isDownloadInfoSubmitted)
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        }     
+    },
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        updateDownloadInfo (info) {
+            this.$store.commit('tal/updateDownloadInfo', info)
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            styl = Object.assign(styl, { 'border': '5px groove #E91E63', outline: 'none', 'color': 'FFFFFF' })
+            return styl
+        },
+        submit () {
+            this.buttonClicked = true 
+                this.$store.commit('tal/updateIsDownloadInfoSubmitted', true)
+                this.$refs.inputs.style.display = "none";
+        }
+    },
+    /*watch: {
+        currentTime () {
+            if (this.currentTime > 111.8) {
+                this.submit()
+            }
+        }
+    }*/
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    border-radius: 10px;
+    margin: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.input-base {
+    border: 3px solid #E91E63;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #E91E63;
+    width: 96%;
+    color: #000000;
+}
+</style>
+
+f. Finishing.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="brief">
+                <span :style="setInputStyl()"><u>{{ `${'Thank You'}` }}</u><br>
+                {{ `${'For More Information'}` }}<br>
+                {{ `${'Please Visit '}` }}<a target="_blank" href="https://www.tal.com.au/">TAL</a></span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn','opt','balanceInfo','options','selectOption','brief','lose','contentSize'],
+
+    data() {
+        return {
+            tile: true,
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        name () {
+            return this.userName === undefined ? 'there' : this.userName.replace(/^[a-z]/,
+            function (x) { 
+                return x.toUpperCase()
+            })
+        },
+        isOptionSelected () {
+            return this.$store.getters['tal/isOptionSelected'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: { 
+        checkTerms(){
+            this.$refs.brief.style.display = "none";
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        }
+    },
+
+    /*mounted() {
+        console.log("Store Values:")
+        console.log("WebsiteLoadingCounter: " +localStorage.WebsiteLoadingCounter + "; User: " +localStorage.name + "; Option: " +localStorage.option + "; Time: " +localStorage.lastVisitTime);
+    }*/
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #263238;
+    background: linear-gradient(to bottom, #7B1FA2 0%, #E91E63 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 96%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+@media screen and (min-width: 500px) {
+  .input-wrapper {
+    width: 140px;
+    text-align: center;
+  }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 95px;
+    }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 200px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+
+</style>
+
+g. Income.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">{{ name }}</span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize','selectOption','selectPercentage','currentTime'],
+
+    data() {
+        return {
+            username: 'NewUser'
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },
+        name () {
+                this.$store.commit('tal/updateUserInfo', this.username)
+                this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                localStorage.setItem('name', this.username);
+                return this.username;
+        },
+
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+        updateUserInfo (info) {
+            this.$store.commit('tal/updateUserInfo', info)
+        }
+    }
+}
+</script>
+
+<style scoped>
+.input-wrapper {
+    color: transparent;
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+  }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    color: transparent;
+    }
+}
+
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        color: transparent;
+    }
+}
+
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: landscape)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPhone 4*/
+@media only screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    color: transparent;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .input-wrapper {
+    color: transparent;
+  }
+}
+</style>
+
+h. Info.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()"><u>{{ `${'Did you know'}` }}</u>?<br>
+                On <u>30 June, 2018</u><br>
+                New members of
+                Age-group below 25
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom, #7B1FA2 0%, #263238 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 53%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 119px;
+    text-align: center;
+  }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 230px;
+    }
+}
+
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+    text-align: center;
+    width: 120px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+        width: 135px;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 187px;
+    }
+}
+
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+        width: 100px;
+        text-align: center;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: landscape)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        text-align: center;
+        width: 250px;
+    }
+}
+
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        text-align: center;
+        width: 232px;
+    }
+}
+
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 230px;
+    }
+}
+
+@media screen 
+  and (min-width: 320px)
+  and (max-width: 640px) 
+  and (-webkit-device-pixel-ratio: 2) 
+  and (orientation: landscape) {
+      .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) {
+    .input-wrapper {
+    text-align: center;
+    width: 220px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 187px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 155px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 155px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 195px;
+    text-align: center;
+  }
+}
+
+/*pc*/
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 270px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+i.InputDate.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="inputz">
+                <input class="input-base" v-model="datepicker" :style="setInputStyl()" placeholder="Effective Date"><br/>
+                <button class="input-base" :style="setInputStyl()" @click.prevent="submit">SUBMIT</button>
+            </div>
+        </v-layout>
+        
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize','selectOption','selectPercentage','selectYear','salaryInfo','datepickerInfo'],
+    data() {
+        return {
+            datepicker: "",
+            offsetTop: 0,
+            btnClicked: false,
+            date: new Date().toISOString().substr(0, 10),
+            modal: false
+        }
+    },
+    computed: {
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        },
+        isDatepickerInfoSubmitted () {
+            return this.$store.getters['tal/isSalaryInfoSubmitted']
+        },
+        pausePlayedDatepicker () {
+            return this.$store.getters['tal/pausePlayedDatepicker'](this.currentTime, this.isDatepickerInfoSubmitted)
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        }     
+    },
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        updateDatepickerInfo (info) {
+            this.$store.commit('tal/updateDatepickerInfo', info)
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            styl = Object.assign(styl, { 'border': '5px groove #8E24AA', outline: 'none', 'color': 'FFFFFF' })
+            return styl
+        },
+        submit () {
+            this.btnClicked = true        
+            this.$store.commit('tal/updateIsDatepickerInfoSubmitted', true)
+            this.$refs.inputz.style.display = "none";
+        }
+    },
+    watch: {
+        currentTime () {
+            if (this.currentTime > 115.7) {
+                this.submit()
+            }
+        }
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    border-radius: 10px;
+    margin: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.input-base {
+    border: 3px solid #2196F3 ;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #E91E63;
+    width: 96%;
+    color: #000000;
+}
+</style>
+
+j. InputGmi.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <!--<div
+                v-for="(info, i) in salaryInfo.slice(0, salaryInfo.length-1)"
+                :key="i"
+                class="input-wrapper"
+            >
+                <input
+                    :placeholder="info.label"
+                    class="input-base"
+                    :style="setInputStyl(info.key)"
+                    v-model="salaryInfo[i].value"
+                    @input="updateSalaryInfo(info)"
+                >
+                
+            </div>-->
+            
+            <div class="input-wrapper" ref="inputs">
+                <input class="input-base" v-model="salary" :style="setInputStyl()" placeholder="Gross Income"><br/>
+                <button class="input-base" :style="setInputStyl()" @click.prevent="submit">SUBMIT</button>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize','selectOption','selectPercentage','selectYear'],
+    data() {
+        return {
+            salary: "",
+            offsetTop: 0,
+            /*salaryInfo: [
+                { label: 'Gross Monthly Income', key: 'gross', value: null },
+                { label: 'Gross Monthly Income', key: 'income', value: null }
+            ],*/
+            //mandatoryFields: ['gross'],
+            buttonClicked: false
+        }
+    },
+    computed: {
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        },
+        isSalaryInfoSubmitted () {
+            return this.$store.getters['tal/isSalaryInfoSubmitted']
+        },
+        pausePlayedSalary () {
+            return this.$store.getters['tal/pausePlayedSalary'](this.currentTime, this.isSalaryInfoSubmitted)
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        }     
+    },
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        updateSalaryInfo (info) {
+            this.$store.commit('tal/updateSalaryInfo', info)
+        },
+        //hasMandatoryValue (key) {          
+            //return this.salaryInfo.filter(x => x.value !== null).map(x => x.key).includes(key)
+            //return this.salaryInfo.includes(key)
+        //},
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            styl = Object.assign(styl, { 'border': '5px groove #2196F3', outline: 'none', 'color': 'FFFFFF' })
+            /*if (this.buttonClicked) {
+                styl = Object.assign(styl, { 'border': '5px groove #2196F3', outline: 'none', 'color': '#E91E63' })
+            }*/
+            return styl
+        },
+        submit () {
+            this.buttonClicked = true        
+            //if(this.mandatoryFields.map(x => this.hasMandatoryValue(x)).filter(x => x === true).length === this.mandatoryFields.length) {
+            //if(this.mandatoryFields.map(x => this.hasMandatoryValue(x)).filter(x => x === true).length === this.mandatoryFields.length) {
+                this.$store.commit('tal/updateIsSalaryInfoSubmitted', true)
+                //this.$refs.inputz.style.display = "none";
+                this.$refs.inputs.style.display = "none";
+            //}
+        }
+    },
+    watch: {
+        currentTime () {
+            if (this.currentTime > 111.8) {
+                this.submit()
+            }
+        }
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    border-radius: 10px;
+    margin: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.input-base {
+    border: 3px solid #E91E63;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #8E24AA;
+    width: 96%;
+    color: #000000;
+}
+</style>
+
+j. Lose.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">
+                will lose their 
+                Insurance Cover!
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom, #263238 0%, #7B1FA2 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 50%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*.input-wrapper {
+    text-shadow: 0 0 3px #8BC34A, 0 0 5px #F57C00;
+    margin: 3px;
+    text-align: left;
+    width: 50%;
+    font-size: 0.8em;
+    font-weight: bold;
+}*/
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 185px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 190px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 160px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        text-align: center;
+        width: 195px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    text-align: center;
+    width: 110px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 135px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 135px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 165px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 230px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+j. Messages.vue
+<template>
+    <div>
+        <div v-if="whichToOpen==='Message1'">
+
+        </div>
+        <div v-else-if="whichToOpen==='Balance'">
+        </div>
+    </div>
+
+</template>
+
+<script>
+export default {
+    props: ['currentTime', 'condition1', 'condition2'],
+    data () {
+        return {
+
+        }
+    },
+    computed: {
+        whichToOpen () {
+            return this.$store.getters['tal/whichToOpen'](this.currentTime, this.condition1, this.condition2)
+        }
+    },
+    components: {
+        appMessage1: Message1,
+        appBalance: Balance
+    }
+}
+</script>
+
+k. Opt.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()"><u>{{ `${'Did you know'}` }}</u>?<br>
+                Members who received 
+                their last super 
+                contribution more 
+                than 13 months ago
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #263238;
+    background: linear-gradient(to bottom, #7B1FA2 0%, #E91E63 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 36%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 230px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 240px;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 195px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 195px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 230px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 196px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 162px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 162px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 205px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 280px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+l. Optionnow.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">
+                So, what are your options?
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn', 'lose', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #263238;
+    background: linear-gradient(to bottom, #F57C00 0%, #8BC34A 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 50%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 155px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 140px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 160px;
+        text-align: center;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    text-align: center;
+    width: 70px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 115px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 115px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 140px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 190px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+m. Options.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()"><u>{{ `${'Attention'}` }}</u><br>
+                Unless you opt to keep your cover,
+                you will lose your cover on 30 June 2018.</span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info','warn','opt','balanceInfo', 'lose','contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #263238;
+    background: linear-gradient(to bottom, #7B1FA2 0%, #E91E63 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 35%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 180px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 215px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 180px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 220px;
+        text-align: center;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 150px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 150px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 192px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 265px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+n. SelectOption.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="options">
+                <span :style="setInputStyl()"><u>{{ `${'Choose Percentage'}` }}</u><br>
+                <input type="radio" id="seventyfive" value="seventyfive" v-model="selected" @change="checkOption(selected)">
+                <label for="seventyfive">75%</label><br>
+                <input type="radio" id="fifty" value="fifty" v-model="selected" @change="checkOption(selected)">
+                <label for="fifty">50%</label><br>
+                <!--
+                <input type="radio" id="optionOne" value="Keep cover" v-model="selected" @change="checkOption(selected)">
+                <label for="optionOne">Opt to keep cover</label><br>
+                <input type="radio" id="optionTwo" value="Lose cover" v-model="selected" @change="checkOption(selected)">
+                <label for="optionTwo">Opt to lose cover</label><br>
+                <input type="radio" id="optionThree" value="Contribute" v-model="selected" @change="checkOption(selected)">
+                <label for="optionThree">Start contributing</label><br>
+                <input type="radio" id="optionFour" value="Roll-in funds" v-model="selected" @change="checkOption(selected)">
+                <label for="optionFour">Roll-in funds</label>-->
+            </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize'],
+    data() {
+        return {
+            selected: '',
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        /*userData(){
+            return this.$store.getters['tal/userdata'];
+        },*/
+        isOptionSelected () {
+            return this.$store.getters['tal/isOptionSelected'];
+        },
+        pausePlayed () {
+            return this.$store.getters['tal/pausePlayed'](this.currentTime, this.isOptionSelected)
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        checkOption (v) {
+            this.$store.commit('tal/selectOption', this.selected);
+            this.$store.commit('tal/updateIsOptionSelected', true);
+            this.$refs.options.style.display = "none";
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #000000;
+    background: linear-gradient(to bottom, #E91E63 0%,  #8E24AA 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 97%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 138px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 225px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 240px;
+        text-align: center;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 105px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 205px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 280px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #2196F3;
+    border-radius: 10px;
+}
+</style>
+
+i. SelectPercentage.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="options">
+                <span :style="setInputStyl()"><u>{{ `${'Choose Option'}` }}</u><br>
+                <input type="radio" id="yes" value="yes" v-model="y" @change="checkY(y)">
+                <label for="yes">Yes</label><br>
+                <input type="radio" id="no" value="no" v-model="n" @change="checkN(n)">
+                <label for="no">No</label><br>
+            </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    //props: ['windowWidth', 'userInfo', 'welcome','info','warn','opt','balanceInfo','options', 'contentSize'],
+    props: ['windowWidth','contentSize','selectOption'],
+    data() {
+        return {
+            selected: '',
+            y: '',
+            n: ''
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        isPercentageY () {
+            return this.$store.getters['tal/isPercentageY'];
+        },
+        isPercentageN () {
+            return this.$store.getters['tal/isPercentageN'];
+        },
+        isPercentageSelected () {
+            return this.$store.getters['tal/isPercentageSelected'];
+        },
+        pausePlayedY () {
+            return this.$store.getters['tal/pausePlayedY'](this.currentTime, this.isPercentageY)
+        },
+        pausePlayedN () {
+            return this.$store.getters['tal/pausePlayedN'](this.currentTime, this.isPercentageN)
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        checkPercentage (v) {
+            this.$store.commit('tal/selectPercentage', this.selected);
+            this.$store.commit('tal/updateIsPercentageSelected', true);
+            this.$refs.options.style.display = "none";
+        },
+        checkY (v) {
+            this.$store.commit('tal/selectY', this.y);
+            this.$store.commit('tal/updateIsPercentageY', true);
+            this.$refs.options.style.display = "none";
+        },
+        checkN (v) {
+            this.$store.commit('tal/selectN', this.n);
+            this.$store.commit('tal/updateIsPercentageN', true);
+            this.$refs.options.style.display = "none";
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #000000;
+    background: linear-gradient(to bottom, #2196F3 0%,  #8E24AA 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 97%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 138px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 225px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 240px;
+        text-align: center;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 105px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 205px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 280px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #2196F3;
+    border-radius: 10px;
+}
+</style>
+
+m. SelectPeriod.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="options">
+                <span :style="setInputStyl()"><u>{{ `${'Choose Period'}` }}</u><br>
+                <input type="radio" id="forteen" value="forteen" v-model="selected" @change="checkPeriod(selected)">
+                <label for="twoyears">14 Days</label><br>
+                <input type="radio" id="thirty" value="thirty" v-model="selected" @change="checkPeriod(selected)">
+                <label for="fiveyears">30 Days</label><br>
+                <input type="radio" id="sixty" value="sixty" v-model="selected" @change="checkPeriod(selected)">
+                <label for="fiveyears">60 Days</label><br>
+                <input type="radio" id="ninety" value="ninety" v-model="selected" @change="checkPeriod(selected)">
+                <label for="fiveyears">90 Days</label><br>
+            </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize','selectOption','selectPercentage','selectYear','salaryInfo','inputDate'],
+    data() {
+        return {
+            selected: ''
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        isPeriodSelected () {
+            return this.$store.getters['tal/isPeriodSelected'];
+        },
+        pausePlayedPeriod () {
+            return this.$store.getters['tal/pausePlayedYear'](this.currentTime, this.isPeriodSelected)
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        checkPeriod (v) {
+            this.$store.commit('tal/selectPeriod', this.selected);
+            this.$store.commit('tal/updateIsPeriodSelected', true);
+            this.$refs.options.style.display = "none";
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #000000;
+    background: linear-gradient(to bottom, #DAA520 0%, #8E24AA 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 97%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 138px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 225px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 240px;
+        text-align: center;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 105px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 205px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 280px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #2196F3;
+    border-radius: 10px;
+}
+</style>
+
+n. SelectYear.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper" ref="options">
+                <span :style="setInputStyl()"><u>{{ `${'Choose Year'}` }}</u><br>
+                <input type="radio" id="twoyears" value="twoyears" v-model="selected" @change="checkYear(selected)">
+                <label for="twoyears">2 Years</label><br>
+                <input type="radio" id="fiveyears" value="fiveyears" v-model="selected" @change="checkYear(selected)">
+                <label for="fiveyears">5 Years</label><br>
+            </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth','contentSize','selectOption','selectPercentage'],
+    data() {
+        return {
+            selected: '',
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        isYearSelected () {
+            return this.$store.getters['tal/isYearSelected'];
+        },
+        pausePlayedYear () {
+            return this.$store.getters['tal/pausePlayedYear'](this.currentTime, this.isYearSelected)
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        checkYear (v) {
+            this.$store.commit('tal/selectYear', this.selected);
+            this.$store.commit('tal/updateIsYearSelected', true);
+            this.$refs.options.style.display = "none";
+        },
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #000000;
+    background: linear-gradient(to bottom, #E91E63 0%,  #DAA520 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 97%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 138px;
+    }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 225px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 235px;
+    }
+}
+
+/* samsung s3*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 190px;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 240px;
+        text-align: center;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+    width: 105px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 205px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 280px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #2196F3;
+    border-radius: 10px;
+}
+</style>
+
+o. UserInfo.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">{{ name }}</span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['currentTime', 'windowWidth', 'contentSize'],
+
+    data() {
+        return {
+            username: 'NewUser'
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },
+        name () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else {
+                this.$store.commit('tal/updateUserInfo', this.username)
+                this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                localStorage.setItem('name', this.username);
+                return this.username;
+            }
+        },
+
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+        updateUserInfo (info) {
+            this.$store.commit('tal/updateUserInfo', info)
+        }
+    }
+}
+</script>
+
+<style scoped>
+.input-wrapper {
+    color: transparent;
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+  }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    color: transparent;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    color: transparent;
+    }
+}
+
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        color: transparent;
+    }
+}
+
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: landscape)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        color: transparent;
+    }
+}
+
+/*iPhone 4*/
+@media only screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    color: transparent;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .input-wrapper {
+    color: transparent;
+  }
+}
+</style>
+
+p. VideoInfo.vue
+<template>
+    <v-menu bottom left open-on-click>
+        <v-btn slot="activator" color="teal accent-4" small dark :icon="windowWidth < sizeParams.breaks.medium" id="crd">
+            <v-icon dark :size="windowWidth > 0 ? '16' : '20'">timer</v-icon>
+            <span v-if="windowWidth > sizeParams.breaks.medium" class="ml-1">COUNTDOWN</span>
+        </v-btn>
+        <v-list dense id="crd">
+            <v-list-tile>
+                <v-list-tile-content>
+                    <v-list-tile-title>{{ `${'Current Time: ' + Math.round(currentTime * 100) / 100}` }}</v-list-tile-title>
+                </v-list-tile-content>                                
+            </v-list-tile>
+            <v-list-tile>
+                <v-list-tile-content>
+                    <v-list-tile-title>{{ `${'Duration: ' + Math.round(duration * 100) / 100}` }}</v-list-tile-title>
+                </v-list-tile-content>                                
+            </v-list-tile>
+            <!--
+            <v-list-tile>
+                <v-list-tile-content>
+                    <v-list-tile-title>{{ `${'Status: ' + videoStatus}` }}</v-list-tile-title>
+                </v-list-tile-content>                              
+            </v-list-tile>-->                                                     
+        </v-list>
+    </v-menu>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'currentTime', 'duration', 'videoStatus'],
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        }
+    }
+}
+</script>
+
+q. Warn.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()"><u>{{ `${'Did you know'}` }}</u>?<br>
+                Members having
+                Account Balance less than $6,000
+                </span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['windowWidth', 'userInfo', 'welcome','info', 'contentSize'],
+
+    data() {
+        return {}
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #FFFFFF;
+    background: linear-gradient(to bottom, #263238 0%, #E91E63 100%);
+    border-radius: 10px;
+    margin: 3px;
+    border: solid;
+    text-align: left;
+    width: 35%;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 190px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 195px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 160px;
+    }
+}
+
+@media screen 
+  and (min-width: 320px)
+  and (max-width: 640px) 
+  and (-webkit-device-pixel-ratio: 2) 
+  and (orientation: landscape) {
+      .input-wrapper{
+        text-align: center;
+        width: 160px;
+    }
+}
+
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+        width: 115px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 137px;
+    }
+}
+
+/*iPhone 4*/
+@media screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 137px;
+    }
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 170px;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .input-wrapper {
+    width: 235px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+r. Welcome.vue
+<template>
+    <v-container id="scroll-target" :style="containerStyl" class="scroll-y pa-0">
+        <v-layout v-scroll:#scroll-target="onScroll" column>
+            <div class="input-wrapper">
+                <span :style="setInputStyl()">{{ `${'Welcome ' + name + ','}` }}</span><br>
+                <span :style="setInputStyl()">{{ `${'Insurance Cover'}` }}</span><br>
+                <span :style="setInputStyl()">{{ `${'Death: ' + deathCover}` }}</span><br>
+                <span :style="setInputStyl()">{{ `${'TPD: ' + tpdCover}` }}</span><br>
+                <span :style="setInputStyl()">{{ `${'Premium: ' + premiumCover}` }}</span>
+            </div>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+export default {
+    props: ['userInfo', 'windowWidth', 'contentSize'],
+
+    data() {
+        return {
+            //username: 'NewUser',
+            death: 'NA',
+            tpd: 'NA',
+            premium: 'NA'
+        }
+    },
+
+    computed: {
+        sizeParams () {
+            return this.$store.getters['video/sizeParams']
+        },
+        name () {
+            return this.$store.getters['tal/userInfo']
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        /*isUserInfoSubmitted () {
+            return this.$store.getters['tal/isUserInfoSubmitted']
+        },*/
+        /*name () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.username = this.userData[i].Username;
+                    this.$store.commit('tal/updateUserInfo', this.userData[i].Username)
+                    this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                    localStorage.setItem('name', this.username);
+                    return this.username;
+                }
+             }
+            }
+
+            else {
+                this.$store.commit('tal/updateUserInfo', this.username)
+                this.$store.commit('tal/updateIsUserInfoSubmitted', true)
+                localStorage.setItem('name', this.username);
+                return this.username;
+            }
+        },*/
+
+        deathCover () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            } 
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.death = this.userData[i].Death;
+                    return this.death;
+                }
+             }
+            }
+
+            else {
+                return this.death;
+            }
+        },
+
+        tpdCover () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            } 
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.tpd = this.userData[i].TPD;
+                    return this.tpd;
+                }
+             }
+            }
+
+            else {
+                return this.tpd;
+            }
+        },
+        premiumCover () {
+            if(location.href.indexOf("DS00001") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "DS00001"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("GS00002") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "GS00002"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            } 
+
+            else if(location.href.indexOf("AY00003") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "AY00003"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("RE00004") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "RE00004"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JK00005") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JK00005"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JP00006") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JP00006"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("PK00007") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "PK00007"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("VS00008") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "VS00008"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("YT00009") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "YT00009"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("JC00010") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "JC00010"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("BN00011") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "BN00011"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else if(location.href.indexOf("KL00012") !=-1){
+                for(var i=0; i<this.userData.length; i++){
+                if(this.userData[i].URL == "KL00012"){
+                    this.premium = this.userData[i].Premium;
+                    return this.premium;
+                }
+             }
+            }
+
+            else {
+                return this.premium;
+            }
+        },
+
+        baseInputStyl () {
+            return this.$store.getters['video/baseInputStyl'](this.windowWidth)
+        },
+        userData(){
+            return this.$store.getters['tal/userdata'];
+        },
+        containerStyl () {
+            return {
+                'max-height': (this.contentSize.height - 60) + 'px',
+                'overflow-x': 'hidden',
+            }
+        }
+    },
+
+    methods: {
+        onScroll (e) {
+            this.offsetTop = e.target.scrollTop
+        },
+        setInputStyl (key=null) {
+            let { fontSize: fontSize, margin: margin, color: color } = this.baseInputStyl
+            let styl = { 'font-size': fontSize + 'px', margin: margin + 'px', color: color}
+            return styl
+        },
+        updateUserInfo (info) {
+            this.$store.commit('tal/updateUserInfo', info)
+        }
+    }
+}
+</script>
+
+<style scoped>
+input, select{
+  text-indent: 8px;
+}
+
+.input-wrapper {
+    color: #263238;
+    background: linear-gradient(to bottom, #E91E63 0%, #7B1FA2 100%);
+    border-radius: 10px;
+    border: solid;
+    text-align: left;
+    font-size: 0.8em;
+    font-weight: bold;
+    width: 100%;
+}
+
+/*iPhone 6,7*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    width: 165px !important;
+    text-align: center;
+  }
+}
+
+/*iPhone 6+,7+*/
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) 
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 185px;
+    }
+}
+
+@media only screen 
+  and (min-width: 414px) 
+  and (max-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: portrait) { 
+    .input-wrapper {
+    width: 115px;
+    }
+}
+
+/*iPhone X*/
+@media only screen 
+  and (min-width: 375px) 
+  and (max-width: 812px) 
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) { 
+    .input-wrapper {
+    text-align: center;
+    width: 187px;
+    }
+}
+
+/* samsung s5*/
+@media only screen 
+  and (min-width: 320px)
+  and (max-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .input-wrapper{
+        text-align: center;
+        width: 160px;
+    }
+}
+
+/*iPhone 5SE*/
+@media screen 
+  and (min-width: 320px) 
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 160px;
+    }
+}
+
+@media screen 
+  and (width: 320px) 
+  and (height: 568px)
+  and (-webkit-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    .input-wrapper{
+        width: 90px;
+        text-align: center;
+    }
+}
+
+/*iPad*/
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        width: 195px;
+        text-align: center;
+    }
+}
+
+@media only screen 
+  and (min-width: 768px) 
+  and (max-width: 1024px) 
+  and (orientation: landscape)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      .input-wrapper{
+        text-align: center;
+    }
+}
+
+/*iPhone 4*/
+@media only screen 
+  and (min-width: 320px)
+  and (orientation: landscape) {
+    .input-wrapper{
+    text-align: center;
+    width: 135px;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .input-wrapper {
+    width: 220px;
+    text-align: center;
+  }
+}
+
+.input-base {
+    border: 1px solid #00BFA5;
+    border-radius: 10px;
+}
+</style>
+
+C.video
+1. DisableDiv.vue
+<template>
+    <div :style="styl"></div>
+</template>
+
+<script>
+export default {
+    props: ['contentSize'],
+    computed: {
+        styl () {
+            return {
+                width: this.contentSize.width + 'px',
+                height: this.contentSize.height + 'px',
+                'background-color': '#B0BEC5',
+                opacity: '0.2',
+                filter: 'alpha(opacity=20)'         
+            }
+        }
+    }
+}
+</script>
+
+2. LayoutDemo.vue
+<template>
+    <v-container fluid class="pa-1">
+        <div class="center-horizontal">
+            <v-layout align-center justify-center row fill-height>
+                <v-layout column>
+                    <v-checkbox v-model="custom" label="custom?" hide-details class="ma-0 pa-0"></v-checkbox>
+                    <v-checkbox v-model="reverse" label="reverse?" hide-details class="ma-0 pa-0"></v-checkbox>   
+                </v-layout>
+                <v-layout row wrap>
+                    <v-radio-group v-model="flexDirection">
+                        <v-radio v-for="n in flexDirectionAvailable" :key="n" :label="n" :value="n"></v-radio>
+                    </v-radio-group>
+                </v-layout>
+             
+
+            </v-layout>
+        </div>
+        <v-layout column id="content">
+            <v-layout v-bind="layoutAttributes">
+                <div class="elevation-5" :style="sideBarStyl">
+                    <span>SIDEBAR</span>
+                </div>                 
+                <div class="elevation-5" :style="outerStyl">
+                    <video-player 
+                        ref="videoPlayer"
+                    >
+                    </video-player>                    
+                </div>
+            </v-layout>
+        </v-layout>
+        <div class="center-horizontal">
+            <v-layout align-center justify-center row fill-height>
+                <span>FOOTER PLACEHOLDER</span>
+            </v-layout>
+        </div>
+    </v-container>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            windowWidth: 0,
+            windowHeight: 0,
+            sidebarSize: 60,
+            custom: false,
+            reverse: false,
+            flexDirectionAvailable: ['row', 'column'],
+            flexDirection: 'row'
+        }
+    },
+    computed: {
+        layoutAttributes () {
+            if (this.custom) {
+                return {
+                    'align-center': true,
+                    'justify-center': true,
+                    [this.flexDirection]: true,
+                    reverse: this.reverse                    
+                }
+            } else {
+                return this.$store.getters['video/layoutAttributes'](this.windowWidth)
+            }            
+        },
+        contentSize () {
+            return this.$store.getters['video/contentSize'](this.windowWidth, this.windowHeight)
+        },
+        outerStyl () {
+            return this.$store.getters['video/outerStyl'](this.contentSize)
+        },
+        sideBarStyl () {
+            const hasRow = Object.keys(this.layoutAttributes).includes('row')
+            const matchingDim = hasRow ? 'height' : 'width'
+            const fixedDim = hasRow ? 'width' : 'height'
+            return {
+                [('min-' + matchingDim)]: this.contentSize[matchingDim] + 'px',
+                [('min-' + fixedDim)]: this.sidebarSize + 'px',
+                'background-color': 'red'
+            }
+        }
+    },
+    methods: {
+        getWindowSize () {
+            this.windowWidth = document.documentElement.clientWidth
+            this.windowHeight = document.documentElement.clientHeight
+        }
+    },
+    watch: {
+        windowHeight () {
+            if (this.windowHeight < this.contentSize.height) {
+                console.log('smaller')
+                this.$vuetify.goTo('#content')
+            }
+        }
+    },
+    mounted() {
+        this.$nextTick(function() {
+            window.addEventListener('resize', this.getWindowSize)
+            this.getWindowSize()
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.getWindowSize)
+    },
+    components: {
+
+    }
+}
+</script>
+
+<style scoped>
+.center-horizontal {
+    display: table;
+    margin: 0 auto;
+    height: 80px;
+    max-height: 80px;
+    width: 300px;
+    background-color: cornsilk;
+}
+</style>
 
 
