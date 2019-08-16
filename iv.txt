@@ -7878,4 +7878,59 @@ package.json
   ]
 }
 
+*nodejs
+var port = 3000;
+var express = require('express');
+var app = express();
+var sql = require('mssql');
+var dbConfig = {
+    server: '',
+    database: '',
+    user: '',
+    password: '',
+    options: {
+      encrypt: true
+    }
+  }
+
+  var server = app.listen(port, function () {
+    var host = server.address().address
+    var port = server.address().port
+    console.log("API running at http://%s:%s", host, port)
+});
+
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
+
+app.get('/naof', function (req, res) {
+    sql.close();
+    sql.connect(dbConfig, function() {
+        var request = new sql.Request();
+            request.query(
+                "SELECT TOP (10) * FROM [table]"
+            , function(err, recordset) {
+            if(err) console.log(err);
+            res.end(JSON.stringify(recordset)); // Result in JSON format
+        });
+    });
+})
+
+app.get('/pbri', function (req, res) {
+    sql.close();
+    sql.connect(dbConfig, function() {
+        var request = new sql.Request();
+        request.query(
+            "SELECT TOP (10) * FROM [table]"
+            , function(err, recordset) {
+            if(err) console.log(err);
+            res.end(JSON.stringify(recordset)); // Result in JSON format
+        });
+    });
+})
+
 
